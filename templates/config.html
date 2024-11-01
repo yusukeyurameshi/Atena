@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+
+{% block panel %}
+<div class="position-sticky pt-3 col-md-3 col-lg-6 d-md-block bg-light sidebar collapse">
+<form method="post">
+    <div><h5>Config Tenancy Access</h5></div>
+    <div class="mb-3">
+        <label for="exampleInputEmail1" class="form-label">Tenancy OCID</label>
+        <input type="text" class="form-control" id="TenancyOCID" value="{{ request.form['TenancyOCID'] }}" required>
+    </div>
+    <div class="mb-3">
+        <label for="exampleInputEmail1" class="form-label">User OCID</label>
+        <input type="text" class="form-control" id="UserOCID" value="{{ request.form['UserOCID'] }}" required>
+    </div>
+    <div class="mb-3">
+        <label for="exampleInputEmail1" class="form-label">Home Region</label>
+        <input type="text" class="form-control" id="HomeRegion" value="{{ request.form['HomeRegion'] }}" required>
+    </div>
+    <div class="mb-3">
+        <label for="exampleInputEmail1" class="form-label">Fingerprint</label>
+        <input type="text" class="form-control" id="Fingerprint" value="{{ request.form['Fingerprint'] }}" required>
+    </div>
+    <div class="mb-3">
+        <label for="exampleInputEmail1" class="form-label">Private PEM Key</label>
+        <textarea type="text" class="form-control" id="PEMKey" value="{{ request.form['PEMKey'] }}" required></textarea>
+    </div>
+<!--    <div class="mb-3">
+      <label for="exampleInputPassword1" class="form-label">Password</label>
+      <input type="password" class="form-control" id="exampleInputPassword1">
+    </div>
+    <div class="mb-3 form-check">
+      <input type="checkbox" class="form-check-input" id="exampleCheck1">
+      <label class="form-check-label" for="exampleCheck1">Check me out</label>
+    </div>
+-->
+<button type="submit" class="btn btn-primary">Submit</button>
+  </form>
+</div>
+{% endblock %}

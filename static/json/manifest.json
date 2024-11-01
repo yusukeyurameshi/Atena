@@ -1,0 +1,8 @@
+{
+    "name": "Bootstrap",
+    "short_name": "Bootstrap",
+    "start_url": "/?utm_source=a2hs",
+    "theme_color": "#7952b3",
+    "background_color": "#7952b3",
+    "display": "standalone"
+  }
