@@ -2,39 +2,70 @@
 
 
 {% block panel %}
-<div class="position-sticky pt-3 col-md-3 col-lg-6 d-md-block bg-light sidebar collapse">
-<form method="post">
-    <div><h5>Config Tenancy Access</h5></div>
-    <div class="mb-3">
-        <label for="exampleInputEmail1" class="form-label">Tenancy OCID</label>
-        <input type="text" class="form-control" id="TenancyOCID" value="{{ request.form['TenancyOCID'] }}" required>
+
+
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#tenancyAccess" type="button" role="tab" aria-controls="tenancyAccess" aria-selected="true">Tenancy Access</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#ScanInterval" type="button" role="tab" aria-controls="ScanInterval" aria-selected="false">Config OCI Scan Interval</button>
+    </li>
+</ul>
+    <div class="tab-content" id="myTabContent">
+    <div class="tab-pane fade show active" id="tenancyAccess" role="tabpanel" aria-labelledby="home-tab">
+        <div class="position-sticky pt-3 col-md-3 col-lg-6 d-md-block bg-light sidebar collapse">
+            <form method="post">
+                <div><h5>Config Tenancy Access</h5></div>
+                <div class="mb-3">
+                    <label for="exampleInputEmail1" class="form-label">Tenancy OCID</label>
+                    <input type="text" class="form-control" name="TenancyOCID" value="{{ request.form['TenancyOCID'] }}{{ TenancyOCID }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="exampleInputEmail1" class="form-label">User OCID</label>
+                    <input type="text" class="form-control" name="UserOCID" value="{{ request.form['UserOCID'] }}{{ UserOCID }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="exampleInputEmail1" class="form-label">Home Region</label>
+                    <input type="text" class="form-control" name="HomeRegion" value="{{ request.form['HomeRegion'] }}{{ HomeRegion }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="exampleInputEmail1" class="form-label">Fingerprint</label>
+                    <input type="text" class="form-control" name="Fingerprint" value="{{ request.form['Fingerprint'] }}{{ Fingerprint }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="exampleInputEmail1" class="form-label">Private PEM Key</label>
+                    <textarea type="text" class="form-control" name="PEMKey" value="{{ request.form['PEMKey'] }}" required></textarea>
+                </div>
+                <input type="text" class="form-control" name="TAB" value="OCIAccess" hidden>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
     </div>
-    <div class="mb-3">
-        <label for="exampleInputEmail1" class="form-label">User OCID</label>
-        <input type="text" class="form-control" id="UserOCID" value="{{ request.form['UserOCID'] }}" required>
+    <div class="tab-pane fade" id="ScanInterval" role="tabpanel" aria-labelledby="profile-tab">
+        <div class="position-sticky pt-3 col-md-3 col-lg-6 d-md-block bg-light sidebar collapse">
+            <form method="post">
+                <div><h5>Config Interval OCI Scan</h5></div>
+                <div class="mb-3">
+                    <label for="exampleInputEmail1" class="form-label">Parent Compartment</label>
+                    <input type="text" class="form-control" name="ParentCompartment" value="{{ request.form['ParentCompartment'] }}{{ ParentCompartment }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="exampleInputEmail1" class="form-label">Compartment Interval Scan (seconds)</label>
+                    <input type="text" class="form-control" name="compIntervalScan" value="{{ request.form['compIntervalScan'] }}{{ compIntervalScan }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="exampleInputEmail1" class="form-label">Service Interval Scan (seconds)</label>
+                    <input type="text" class="form-control" name="serviceIntervalScan" value="{{ request.form['serviceIntervalScan'] }}{{ serviceIntervalScan }}" required>
+                </div>
+                <input type="text" class="form-control" name="TAB" value="IntervalScan" hidden>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
     </div>
-    <div class="mb-3">
-        <label for="exampleInputEmail1" class="form-label">Home Region</label>
-        <input type="text" class="form-control" id="HomeRegion" value="{{ request.form['HomeRegion'] }}" required>
-    </div>
-    <div class="mb-3">
-        <label for="exampleInputEmail1" class="form-label">Fingerprint</label>
-        <input type="text" class="form-control" id="Fingerprint" value="{{ request.form['Fingerprint'] }}" required>
-    </div>
-    <div class="mb-3">
-        <label for="exampleInputEmail1" class="form-label">Private PEM Key</label>
-        <textarea type="text" class="form-control" id="PEMKey" value="{{ request.form['PEMKey'] }}" required></textarea>
-    </div>
-<!--    <div class="mb-3">
-      <label for="exampleInputPassword1" class="form-label">Password</label>
-      <input type="password" class="form-control" id="exampleInputPassword1">
-    </div>
-    <div class="mb-3 form-check">
-      <input type="checkbox" class="form-check-input" id="exampleCheck1">
-      <label class="form-check-label" for="exampleCheck1">Check me out</label>
-    </div>
--->
-<button type="submit" class="btn btn-primary">Submit</button>
-  </form>
+    <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">...</div>
 </div>
+
+
+
 {% endblock %}

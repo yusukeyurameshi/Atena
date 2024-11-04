@@ -2,11 +2,12 @@ from flask import (
     Blueprint, flash, g, redirect, render_template, request, url_for, current_app
 )
 import os
-import json
+#import json
 from werkzeug.exceptions import abort
 
 #from flaskr.auth import login_required
 from Atena.db import get_db
+from Atena.configFile import writeConfigFile, readConfigFile
 
 bp = Blueprint('dashboard', __name__)
 
@@ -27,32 +28,67 @@ def index():
 @bp.route('/config', methods=('GET', 'POST'))
 def config():
     if request.method == 'POST':
-        TenancyOCID = request.form['TenancyOCID']
-        UserOCID = request.form['UserOCID']
-        HomeRegion = request.form['HomeRegion']
-        Fingerprint = request.form['Fingerprint']
-        PEMKey = request.form['PEMKey']
-        error = None
+        if request.form['TAB'] == 'OCIAccess':
+            TenancyOCID = request.form['TenancyOCID']
+            UserOCID = request.form['UserOCID']
+            HomeRegion = request.form['HomeRegion']
+            Fingerprint = request.form['Fingerprint']
+            PEMKey = request.form['PEMKey']
+            error = None
 
-        dictionary='{"TenancyOCID": "'+TenancyOCID+'", "UserOCID": "'+UserOCID+'", "HomeRegion": "'+HomeRegion+'", "Fingerprint": "'+Fingerprint+'", "PEMKey": '+PEMKey+'"}'
-        print(dictionary)
-        json_object = json.loads(dictionary)
-        with open(current_app.config['CONFIG']+'config.json', 'w') as f:
-            json.dump(json_object, f)
+            dictionary=['[DEFAULT]', 'user='+UserOCID, 'fingerprint='+Fingerprint, 'key_file='+current_app.config['PRIVATEKEY'], 'tenancy='+TenancyOCID, 'region='+HomeRegion]
 
-        if not title:
-            error = 'Title is required.'
+            with open(current_app.config['CONFIG'], 'w') as f:
+                for line in dictionary:
+                    f.write(line)
+                    f.write('\n')
 
-        if error is not None:
-            flash(error)
-        else:
-            db = get_db()
-            db.execute(
-                'INSERT INTO tenancy ( user_id, tenancy_ocid, user_ocid, home_region, fingerprint, pem_key)'
-                ' VALUES (?, ?, ?, ?, ?, ?)',
-                (1, TenancyOCID, UserOCID, HomeRegion, Fingerprint, PEMKey)
-            )
-            db.commit()
+            with open(current_app.config['PRIVATEKEY'], 'w') as f:
+                f.write(PEMKey)
+
             return redirect(url_for('dashboard.index'))
+        elif request.form['ParentCompartment'] !=None:
+            ParentCompartment = request.form['ParentCompartment']
+            compIntervalScan = request.form['compIntervalScan']
+            serviceIntervalScan = request.form['serviceIntervalScan']
+            error = None
 
-    return render_template('config.html')
+            dictionary=['[INTERVALSCAN]', 'ParentCompartment='+ParentCompartment, 'compIntervalScan='+compIntervalScan, 'serviceIntervalScan='+serviceIntervalScan]
+
+            with open(current_app.config['CONFIGINTERVAL'], 'w') as f:
+                for line in dictionary:
+                    f.write(line)
+                    f.write('\n')
+            return redirect(url_for('dashboard.index'))
+    else:
+        valuestr = readConfigFile(current_app.config['CONFIGINTERVAL'])
+
+        for item in valuestr:
+            if item[0] == 'parentcompartment':
+                ParentCompartment = item[1]
+            elif item[0] == 'compintervalscan':
+                compIntervalScan = item[1]
+            elif item[0] == 'serviceintervalscan':
+                serviceIntervalScan = item[1]
+
+        valuestr = readConfigFile(current_app.config['CONFIG'])
+
+        for item in valuestr:
+            print(item)
+            if item[0] == 'user':
+                UserOCID = item[1]
+            elif item[0] == 'fingerprint':
+                Fingerprint = item[1]
+            elif item[0] == 'tenancy':
+                TenancyOCID = item[1]
+            elif item[0] == 'region':
+                HomeRegion = item[1]
+
+        return render_template('config.html', 
+                               serviceIntervalScan = serviceIntervalScan, 
+                               compIntervalScan = compIntervalScan, 
+                               ParentCompartment = ParentCompartment,
+                               UserOCID = UserOCID,
+                               HomeRegion = HomeRegion,
+                               Fingerprint = Fingerprint,
+                               TenancyOCID = TenancyOCID)
