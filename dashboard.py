@@ -2,11 +2,10 @@ from flask import (
     Blueprint, flash, g, redirect, render_template, request, url_for, current_app
 )
 import os
-#import json
 from werkzeug.exceptions import abort
 
 #from flaskr.auth import login_required
-from Atena.db import get_db
+from Atena.db import get_db, close_db
 from Atena.configFile import writeConfigFile, readConfigFile
 
 bp = Blueprint('dashboard', __name__)
@@ -15,15 +14,19 @@ bp = Blueprint('dashboard', __name__)
 def index():
     if not os.path.exists(current_app.config['CONFIG']):
         return redirect(url_for('dashboard.config'))
-        #return render_template('config.html')
-
 
     db = get_db()
     posts = db.execute(
-        'SELECT id, name, url'
+        'SELECT id_menu, name, url'
         ' FROM menu'
     ).fetchall()
-    return render_template('dashboard/index.html', posts=posts)
+
+    regions = db.execute('select id_region, region from regions').fetchall()
+    # print(regions)
+    compartments = db.execute('select ocid, name, status from compartments').fetchall()
+    # print(compartments)
+
+    return render_template('dashboard/index.html',posts=[posts, regions, compartments])#, compartments=compartments)
 
 @bp.route('/config', methods=('GET', 'POST'))
 def config():
@@ -34,14 +37,11 @@ def config():
             HomeRegion = request.form['HomeRegion']
             Fingerprint = request.form['Fingerprint']
             PEMKey = request.form['PEMKey']
-            error = None
 
-            dictionary=['[DEFAULT]', 'user='+UserOCID, 'fingerprint='+Fingerprint, 'key_file='+current_app.config['PRIVATEKEY'], 'tenancy='+TenancyOCID, 'region='+HomeRegion]
+            dictionary={'user': UserOCID, 'fingerprint': Fingerprint, 'key_file': current_app.config['PRIVATEKEY'], 'tenancy': TenancyOCID, 'region': HomeRegion}
 
-            with open(current_app.config['CONFIG'], 'w') as f:
-                for line in dictionary:
-                    f.write(line)
-                    f.write('\n')
+            writeConfigFile(current_app.config['CONFIG'], dictionary)
+
 
             with open(current_app.config['PRIVATEKEY'], 'w') as f:
                 f.write(PEMKey)
@@ -53,15 +53,27 @@ def config():
             serviceIntervalScan = request.form['serviceIntervalScan']
             error = None
 
-            dictionary=['[INTERVALSCAN]', 'ParentCompartment='+ParentCompartment, 'compIntervalScan='+compIntervalScan, 'serviceIntervalScan='+serviceIntervalScan]
+            dictionary={'ParentCompartment': ParentCompartment, 'compIntervalScan': compIntervalScan, 'serviceIntervalScan': serviceIntervalScan}
 
-            with open(current_app.config['CONFIGINTERVAL'], 'w') as f:
-                for line in dictionary:
-                    f.write(line)
-                    f.write('\n')
+            writeConfigFile(current_app.config['CONFIGINTERVAL'], dictionary)
+
+            # with open(current_app.config['CONFIGINTERVAL'], 'w') as f:
+            #     for line in dictionary:
+            #         f.write(line)
+            #         f.write('\n')
+
+
             return redirect(url_for('dashboard.index'))
     else:
         valuestr = readConfigFile(current_app.config['CONFIGINTERVAL'])
+
+        ParentCompartment = None
+        compIntervalScan = None
+        serviceIntervalScan = None
+        UserOCID = None
+        Fingerprint = None
+        TenancyOCID = None
+        HomeRegion = None
 
         for item in valuestr:
             if item[0] == 'parentcompartment':
@@ -74,7 +86,6 @@ def config():
         valuestr = readConfigFile(current_app.config['CONFIG'])
 
         for item in valuestr:
-            print(item)
             if item[0] == 'user':
                 UserOCID = item[1]
             elif item[0] == 'fingerprint':
@@ -84,11 +95,29 @@ def config():
             elif item[0] == 'region':
                 HomeRegion = item[1]
 
-        return render_template('config.html', 
-                               serviceIntervalScan = serviceIntervalScan, 
-                               compIntervalScan = compIntervalScan, 
-                               ParentCompartment = ParentCompartment,
-                               UserOCID = UserOCID,
-                               HomeRegion = HomeRegion,
-                               Fingerprint = Fingerprint,
-                               TenancyOCID = TenancyOCID)
+        if ParentCompartment is None and UserOCID is None:
+            return render_template('config.html')
+
+        elif UserOCID is None:
+
+            return render_template('config.html', 
+                                serviceIntervalScan = serviceIntervalScan, 
+                                compIntervalScan = compIntervalScan, 
+                                ParentCompartment = ParentCompartment)
+
+        elif ParentCompartment is None:
+            return render_template('config.html', 
+                                UserOCID = UserOCID,
+                                HomeRegion = HomeRegion,
+                                Fingerprint = Fingerprint,
+                                TenancyOCID = TenancyOCID)
+        
+        else:
+            return render_template('config.html', 
+                        serviceIntervalScan = serviceIntervalScan, 
+                        compIntervalScan = compIntervalScan, 
+                        ParentCompartment = ParentCompartment,
+                        UserOCID = UserOCID,
+                        HomeRegion = HomeRegion,
+                        Fingerprint = Fingerprint,
+                        TenancyOCID = TenancyOCID)
