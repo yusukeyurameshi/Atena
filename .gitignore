@@ -175,3 +175,5 @@ htmlcov/
 dist/
 build/
 *.egg-info/
+
+teste.py

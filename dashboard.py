@@ -21,9 +21,9 @@ def index():
         ' FROM menu'
     ).fetchall()
 
-    regions = db.execute('select id_region, region from regions').fetchall()
+    regions = db.execute('select id_region, region from regions order by 2').fetchall()
     # print(regions)
-    compartments = db.execute('select ocid, name, status from compartments').fetchall()
+    compartments = db.execute('select ocid, name, status from compartments order by 2').fetchall()
     # print(compartments)
 
     return render_template('dashboard/index.html',posts=[posts, regions, compartments])#, compartments=compartments)

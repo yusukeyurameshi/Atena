@@ -38,6 +38,7 @@ def create_app(test_config=None):
         SERVICEINTERVALSCAN = serviceIntervalScan
     )
 
+    print(app.config['DATABASE'])
 
     if test_config is None:
         # load the instance config, if it exists, when not testing
@@ -68,8 +69,9 @@ def create_app(test_config=None):
     # sched.add_job(id='Region Scan', func=AtenaOCI.atualizaSubscribedRegions, args = [app.config['CONFIG'], app], trigger='cron', day_of_week='0-6', hour=0)
     # sched.add_job(id='Compartment Scan', func=AtenaOCI.atualizaCompartments, args = [app.config['PARENTCOMPARTMENT'], app.config['CONFIG'], app], trigger='interval', seconds=int(compIntervalScan))
     # sched.start()
-    AtenaOCI.atualizaSubscribedRegions(app.config['CONFIG'], app)
-    AtenaOCI.atualizaCompartments(app.config['PARENTCOMPARTMENT'], app.config['CONFIG'], app, 0)
+    # AtenaOCI.atualizaSubscribedRegions(app.config['CONFIG'], app)
+    # AtenaOCI.atualizaCompartments(app.config['PARENTCOMPARTMENT'], app.config['CONFIG'], app)
+    # AtenaOCI.atualizaFSDR(app.config['CONFIG'], app.config['PARENTCOMPARTMENT'])
 
 
     from . import dashboard

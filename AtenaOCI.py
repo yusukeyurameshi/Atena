@@ -23,7 +23,7 @@ def fetchCompartments(app):
         
         return clist
 
-def atualizaCompartments(parent_compart, config_file_path, app, recursivo):
+def atualizaCompartments(parent_compart, config_file_path, app):
     with app.app_context():
 
         # Carrega a configuração do OCI
@@ -46,7 +46,22 @@ def atualizaCompartments(parent_compart, config_file_path, app, recursivo):
                 # db.execute('''insert into compartments (ocid, name, status) values (?,?,?)''',[compartimento.id, compartimento.name, compartimento.lifecycle_state])
                 insereCompartment(compartimento.id, compartimento.name, compartimento.lifecycle_state, app)
 
-            atualizaCompartments(compartimento.id, config_file_path, app, 1)
+            atualizaCompartments(compartimento.id, config_file_path, app)
+
+def atualizaFSDR(config_file_path, parent_compart):
+
+    # Carrega a configuração do OCI
+    config = oci.config.from_file(config_file_path)
+
+    dr = oci.disaster_recovery.DisasterRecoveryClient(config)
+    identity_client = oci.identity.IdentityClient(config)
+
+    compartimentos = identity_client.list_compartments(parent_compart)
+
+    for compartimento in compartimentos.data:
+        fsdrs = dr.list_dr_protection_groups(compartimento.id)
+        for fsdr in fsdrs:
+            print(fsdr)
 
         
 
