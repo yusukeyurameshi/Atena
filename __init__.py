@@ -1,10 +1,10 @@
 import os
-from Atena.dashboard import readConfigFile
+from AtenaOCI import dashboard
 
 from flask import Flask, current_app
 
 from flask_apscheduler import APScheduler
-from Atena.AtenaOCI import atualizaSubscribedRegions
+from AtenaOCI import atualizaSubscribedRegions
 
 sched = APScheduler()
 

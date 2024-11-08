@@ -5,8 +5,8 @@ import os
 from werkzeug.exceptions import abort
 
 #from flaskr.auth import login_required
-from Atena.db import get_db, close_db
-from Atena.configFile import writeConfigFile, readConfigFile
+from db import get_db, close_db
+from configFile import writeConfigFile, readConfigFile
 
 bp = Blueprint('dashboard', __name__)
 
